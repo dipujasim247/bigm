@@ -7,6 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="_token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"/>
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
     <title>Applicants form</title>
 </head>
 <body>
@@ -130,13 +135,17 @@
                     <div class="row border">
 
                         <div class="col-md-3">
-                            <label for="address_details">Training (*Required)</label>
+                            <label for="training-details">Training (*Required)</label>
                             <div class="col-12">
-                                <input type="radio" name="leng_bangla" class="form-check-inline">Yes
-                                <input type="radio" name="leng_english" class="form-check-inline ml-1">No
+                                <input type="radio" name="train_check" id="train-yes" onclick="train_check_yes()"
+                                       value="0"
+                                       class="form-check-inline">Yes
+                                <input type="radio" name="train_check" id="train-no" onclick="train_check_no()"
+                                       value="1"
+                                       class="form-check-inline ml-1" checked>No
                             </div>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-9 hide" id="train-table-div">
                             <table class="table table-bordered table-light" id="training-table">
                                 <thead>
                                 <tr>
@@ -206,32 +215,33 @@
     //== dynamic Exam Form Start ==
 
     $(document).ready(function () {
-        var count = 0;
-        dynamic_field(count);
+        var i = 0;
+
+        dynamic_field(i);
 
         function dynamic_field(number) {
 
-            html = '<tr>';
-            html += '<td>\n' +
-                '                                        <select name="exam_name[]" id="exam_id" class="form-control">\n' +
+            html = '<tr>\n' +
+                '<td>\n' +
+                '                                        <select name="add-more-row[' + i + '][exam_name]" id="exam_id" class="form-control">\n' +
                 '                                            <option value="#">Select</option>\n' +
                 '                                        </select>\n' +
-                '                                    </td>';
-            html += '<td>\n' +
-                '                                        <select name="university_name[]" id="university_id" class="form-control">\n' +
+                '                                    </td>\n' +
+                '<td>\n' +
+                '                                        <select name="add-more-row[' + i + '][university_name]" id="university_id" class="form-control">\n' +
                 '                                            <option value="#">Select</option>\n' +
                 '                                        </select>\n' +
                 '                                    </td>\n' +
                 '                                    <td>\n' +
-                '                                        <select name="board_name[]" id="board_id" class="form-control">\n' +
+                '                                        <select name="add-more-row[' + i + '][board_name]" id="board_id" class="form-control">\n' +
                 '                                            <option value="#">Select</option>\n' +
                 '                                        </select>\n' +
-                '                                    </td>';
-            html += '<td>\n' +
-                '<input type="text" name="result[]" id="result" class="form-control"\n' +
+                '                                    </td>\n' +
+                '<td>\n' +
+                '<input type="text" name="add-more-row[' + i + '][result]" id="result" class="form-control"\n' +
                 '                                               placeholder="result"></td>\n';
 
-            if (number > 1) {
+            if (number > 0) {
                 html += '<td>\n' +
 
                     '                                        <button type="button" name="delete" id="delete_exam" class="btn btn-danger btn-sm">\n' +
@@ -246,16 +256,17 @@
                     '                                        <button type="button" name="add-more" id="add-more-exam" class="btn btn-info btn-sm">\n' +
                     '                                            Add more..\n' +
                     '                                        </button>\n' +
-                    '                                    </td></tr>';
+                    '                                    </td>\n' +
+                    '</tr>';
                 $('#exam-tbody').html(html);
             }
 
             $(document).on('click', '#add-more-exam', function () {
-                count++;
-                dynamic_field(count);
+                i++;
+                dynamic_field(i);
             });
             $(document).on('click', '#delete_exam', function () {
-                count--;
+                i--;
                 $(this).closest("tr").remove();
             });
 
@@ -264,58 +275,69 @@
         //== dynamic Exam Form End ==
     });
 
-        //== dynamic training Form Start ==
+    //== dynamic training Form Start ==
 
-        $(document).ready(function () {
-
-            var i = 0;
-            dynamic_training(i);
-
-            function dynamic_training(number) {
-
-                html = '<tr>\n' +
-                    '                                    <td>\n' +
-                    '                                        <input type="text" name="add_more[' + i + '] training_name[]" id="training_name"\n' +
-                    '                                               class="form-control"\n' +
-                    '                                               placeholder="Training">\n' +
-                    '                                    </td>\n' +
-                    '                                    <td>\n' +
-                    '                                        <input type="text" name="add_more[' + i + '] training_details[]" id="training_details"\n' +
-                    '                                               class="form-control"\n' +
-                    '                                               placeholder="Training Details">\n' +
-                    '                                    </td>\n' ;
+    $(document).ready(function () {
 
 
-                if (number > 1) {
-                    html += '                                    <td>\n' +
-                        '                                        <button type="button" id="del-training-row"\n' +
-                        '                                                class="btn btn-danger btn-sm del-training-row">Delete\n' +
-                        '                                        </button>\n' +
-                        '                                    </td>\n' +
-                        '                                </tr>';
-                    $('#train-tbody').append(html);
-                } else {
-                    html += '                                    <td>\n' +
-                        '                                        <button type="button" id="add-training-row"\n' +
-                        '                                                class="btn btn-primary btn-sm add-training-row">Add more ..\n' +
-                        '                                        </button>\n' +
-                        '                                    </td>\n' +
-                        '                                </tr>';
-                    $('#train-tbody').html(html);
-                }
-            }
-
-            $(document).on('click', '#add-training-row', function () {
-                i++;
-                dynamic_training(i);
-            });
-
-            $(document).on('click', '#del-training-row', function () {
-                $(this).closest("tr").remove();
-            });
+        $('#train-yes').click(function () {
+            document.getElementById('train-table-div').style.display = 'block';
         });
 
-        //== dynamic training Form End ==
+        $('#train-no').click(function () {
+            document.getElementById('train-table-div').style.display = 'none';
+        });
+
+
+        var i = 0;
+        dynamic_training(i);
+
+        function dynamic_training(number) {
+
+            html = '<tr>\n' +
+                '                                    <td>\n' +
+                '                                        <input type="text" name="add_more[' + i + '] training_name[]" id="training_name"\n' +
+                '                                               class="form-control"\n' +
+                '                                               placeholder="Training">\n' +
+                '                                    </td>\n' +
+                '                                    <td>\n' +
+                '                                        <input type="text" name="add_more[' + i + '] training_details[]" id="training_details"\n' +
+                '                                               class="form-control"\n' +
+                '                                               placeholder="Training Details">\n' +
+                '                                    </td>\n';
+
+
+            if (number > 0) {
+                html += '                                    <td>\n' +
+                    '                                        <button type="button" id="del-training-row"\n' +
+                    '                                                class="btn btn-danger btn-sm del-training-row">Delete\n' +
+                    '                                        </button>\n' +
+                    '                                    </td>\n' +
+                    '                                </tr>';
+                $('#train-tbody').append(html);
+            } else {
+                html += '                                    <td>\n' +
+                    '                                        <button type="button" id="add-training-row"\n' +
+                    '                                                class="btn btn-primary btn-sm add-training-row">Add more ..\n' +
+                    '                                        </button>\n' +
+                    '                                    </td>\n' +
+                    '                                </tr>';
+                $('#train-tbody').html(html);
+            }
+        }
+
+        $(document).on('click', '#add-training-row', function () {
+            i++;
+            dynamic_training(i);
+        });
+
+        $(document).on('click', '#del-training-row', function () {
+            $(this).closest("tr").remove();
+        });
+
+    });
+
+    //== dynamic training Form End ==
 
 </script>
 
